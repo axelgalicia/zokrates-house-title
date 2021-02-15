@@ -1,4 +1,6 @@
-pragma solidity >=0.4.21 <0.6.0;
+// SPDX-License-Identifier: LGPL-3.0-only
+// This file is LGPL3 Licensed
+pragma solidity 0.8.1;
 
 // TODO define a contract call to the zokrates generated solidity contract <Verifier> or <renamedVerifier>
 

@@ -1,23 +1,44 @@
-pragma solidity ^0.5.0;
+// SPDX-License-Identifier: LGPL-3.0-only
+// This file is LGPL3 Licensed
+pragma solidity 0.8.1;
 
-import 'openzeppelin-solidity/contracts/utils/Address.sol';
-import 'openzeppelin-solidity/contracts/drafts/Counters.sol';
-import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
-import 'openzeppelin-solidity/contracts/token/ERC721/IERC721Receiver.sol';
+import './Address.sol';
+import './Counters.sol';
+import './SafeMath.sol';
+import './IERC721Receiver.sol';
 import "./Oraclize.sol";
 
 contract Ownable {
+
+
     //  TODO's
     //  1) create a private '_owner' variable of type address with a public getter function
-    //  2) create an internal constructor that sets the _owner var to the creater of the contract 
-    //  3) create an 'onlyOwner' modifier that throws if called by any account other than the owner.
-    //  4) fill out the transferOwnership function
+    payable address _owner;
     //  5) create an event that emits anytime ownerShip is transfered (including in the constructor)
+    event OwnershipTransfered(payable address previousOwner, payable address newOwner);
+    //  3) create an 'onlyOwner' modifier that throws if called by any account other than the owner.
+    modifier onlyOwner() {
+        require(msg.sender == _owner, "Only contract's owner can call this function");
+        _;
+    }
 
+     //  2) create an internal constructor that sets the _owner var to the creator of the contract 
+     constructor() {
+         _owner = msg.sender;
+        
+     }
+
+    //  4) fill out the transferOwnership function
     function transferOwnership(address newOwner) public onlyOwner {
         // TODO add functionality to transfer control of the contract to a newOwner.
         // make sure the new owner is a real address
+        require(newOwner != address(0), "Not a valid address");
+        emit OwnershipTransfered(_owner, newOwner);
 
+    }
+
+    function getOwner() public pure returns (address) {
+        return _owner;
     }
 }
 
