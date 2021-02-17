@@ -41,7 +41,7 @@ library Address {
      * _Available since v2.4.0._
      */
     function toPayable(address account) internal pure returns (address payable) {
-        return address(uint160(account));
+        return payable(address(uint160(account)));
     }
 
     /**
@@ -66,7 +66,8 @@ library Address {
         require(address(this).balance >= amount, "Address: insufficient balance");
 
         // solhint-disable-next-line avoid-call-value
-        (bool success, ) = recipient.call.value(amount)("");
+       // (bool success, ) = recipient.call.value(amount)("");
+       (bool success, ) = recipient.call{value: amount}("");
         require(success, "Address: unable to send value, recipient may have reverted");
     }
 }
