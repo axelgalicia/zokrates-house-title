@@ -3,9 +3,13 @@ pragma solidity 0.8.1;
 
 import "./ERC165.sol";
 import "../ERC721Mintable.sol";
+import "./SafeMath.sol";
 
 
 contract ERC721Enumerable is ERC165, ERC721 {
+
+    using SafeMath for uint256;
+
     // Mapping from owner to list of owned token IDs
     mapping(address => uint256[]) private _ownedTokens;
 
@@ -145,7 +149,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
         }
 
         // This also deletes the contents at the last position of the array
-        _ownedTokens[from].length--;
+        _ownedTokens[from].length.sub(1);
 
         // Note that _ownedTokensIndex[tokenId] hasn't been cleared: it still points to the old slot (now occupied by
         // lastTokenId, or just over the end of the array if the token was the last one).
@@ -172,7 +176,7 @@ contract ERC721Enumerable is ERC165, ERC721 {
         _allTokensIndex[lastTokenId] = tokenIndex; // Update the moved token's index
 
         // This also deletes the contents at the last position of the array
-        _allTokens.length--;
+        _allTokens.length.sub(1);
         _allTokensIndex[tokenId] = 0;
     }
 }

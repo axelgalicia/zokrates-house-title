@@ -8,7 +8,6 @@ contract ERC721MintableCustom is ERC721Metadata {
     //  1) Pass in appropriate values for the inherited ERC721Metadata contract
     //  - make the base token uri: https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/
     constructor(string memory name, string memory symbol)
-        public
         ERC721Metadata(
             name,
             symbol,
@@ -29,5 +28,6 @@ contract ERC721MintableCustom is ERC721Metadata {
     {
         super._mint(to, tokenId);
         setTokenURI(tokenId);
+        return true;
     }
 }

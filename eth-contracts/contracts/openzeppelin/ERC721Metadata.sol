@@ -10,7 +10,7 @@ contract ERC721Metadata is ERC721Enumerable {
     string private _baseTokenURI;
 
     // TODO: create private mapping of tokenId's to token uri's called '_tokenURIs'
-    mapping (uint256 => string) private _tokenURIs;
+    mapping(uint256 => string) private _tokenURIs;
 
     bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
 
@@ -25,7 +25,7 @@ contract ERC721Metadata is ERC721Enumerable {
         string memory name,
         string memory symbol,
         string memory baseTokenURI
-    ) public {
+    ) {
         // TODO: set instance var values
         _name = name;
         _symbol = symbol;
@@ -38,15 +38,15 @@ contract ERC721Metadata is ERC721Enumerable {
         return _tokenURIs[tokenId];
     }
 
-    function getName() external view returns(string memory) {
+    function getName() external view returns (string memory) {
         return _name;
     }
 
-    function getSymbol() external view returns(string memory) {
+    function getSymbol() external view returns (string memory) {
         return _symbol;
     }
 
-    function getBaseTokenURI() external view returns(string memory) {
+    function getBaseTokenURI() external view returns (string memory) {
         return _baseTokenURI;
     }
 
@@ -55,24 +55,68 @@ contract ERC721Metadata is ERC721Enumerable {
         _tokenURIs[tokenId] = strConcat(_baseTokenURI, uint2str(tokenId));
     }
 
-    function strConcat(string memory _a, string memory _b) internal pure returns (string memory _concatenatedString) {
+    function strConcat(string memory _a, string memory _b)
+        internal
+        pure
+        returns (string memory _concatenatedString)
+    {
         return strConcat(_a, _b, "", "", "");
     }
 
-    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+    function strConcat(
+        string memory _a,
+        string memory _b,
+        string memory _c,
+        string memory _d,
+        string memory _e
+    ) internal pure returns (string memory _concatenatedString) {
+        bytes memory _ba = bytes(_a);
+        bytes memory _bb = bytes(_b);
+        bytes memory _bc = bytes(_c);
+        bytes memory _bd = bytes(_d);
+        bytes memory _be = bytes(_e);
+        string memory abcde = new string(
+            _ba.length + _bb.length + _bc.length + _bd.length + _be.length
+        );
+        bytes memory babcde = bytes(abcde);
+        uint256 k = 0;
+        uint256 i = 0;
+        for (i = 0; i < _ba.length; i++) {
+            babcde[k++] = _ba[i];
+        }
+        for (i = 0; i < _bb.length; i++) {
+            babcde[k++] = _bb[i];
+        }
+        for (i = 0; i < _bc.length; i++) {
+            babcde[k++] = _bc[i];
+        }
+        for (i = 0; i < _bd.length; i++) {
+            babcde[k++] = _bd[i];
+        }
+        for (i = 0; i < _be.length; i++) {
+            babcde[k++] = _be[i];
+        }
+        return string(babcde);
+    }
+
+    function uint2str(uint256 _i)
+        internal
+        pure
+        returns (string memory _uintAsString)
+    {
         if (_i == 0) {
             return "0";
         }
-        uint j = _i;
-        uint len;
+        uint256 j = _i;
+        uint256 len;
         while (j != 0) {
             len++;
             j /= 10;
         }
         bytes memory bstr = new bytes(len);
-        uint k = len - 1;
+        uint256 k = len - 1;
         while (_i != 0) {
-            bstr[k--] = bytes32(uint8(48 + _i % 10));
+            bstr[k--] = bytes1(uint8(48 + (_i % 10)));
             _i /= 10;
         }
         return string(bstr);
