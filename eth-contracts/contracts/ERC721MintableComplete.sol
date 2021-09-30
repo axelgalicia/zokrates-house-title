@@ -4,7 +4,7 @@ pragma solidity 0.8.1;
 
 import "./openzeppelin/ERC721Metadata.sol";
 
-contract ERC721MintableCustom is ERC721Metadata {
+contract ERC721MintableComplete is ERC721Metadata {
     //  1) Pass in appropriate values for the inherited ERC721Metadata contract
     //  - make the base token uri: https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/
     constructor(string memory name, string memory symbol)

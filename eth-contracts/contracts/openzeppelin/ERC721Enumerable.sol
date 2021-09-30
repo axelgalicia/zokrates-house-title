@@ -2,7 +2,7 @@
 pragma solidity 0.8.1;
 
 import "./ERC165.sol";
-import "../ERC721Mintable.sol";
+import "../ERC721.sol";
 import "./SafeMath.sol";
 
 
