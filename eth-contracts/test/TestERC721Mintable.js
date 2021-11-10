@@ -3,34 +3,44 @@ const truffleAssert = require('truffle-assertions');
 
 contract('TestERC721Mintable', accounts => {
 
-    const account_one = accounts[0];
-    const account_two = accounts[1];
+    const currentOwnerAccount = accounts[0];
     const name = "AX_ERC721MintableToken";
     const symbol = "AX_721M";
     const baseTokenURI = "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/";
     const zeroAddress = '0x0000000000000000000000000000000000000000';
-    let currentOwner;
+
     let contractInstance;
 
     describe('match erc721 spec', async () => {
-        const tokensIds = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110];
+        const tokensIds = [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90,
+            100,
+            110
+        ];
+
         before(async () => {
-            contractInstance = await ERC721MintableComplete.new(name, symbol, { from: account_one });
-            currentOwner = account_one;
+            contractInstance = await ERC721MintableComplete.new(name, symbol, { from: currentOwnerAccount });
 
             // TODO: mint multiple tokens  
-            await contractInstance.mint(accounts[1], tokensIds[0], { from: account_one });
-            await contractInstance.mint(accounts[2], tokensIds[1], { from: account_one });
-            await contractInstance.mint(accounts[3], tokensIds[2], { from: account_one });
-            await contractInstance.mint(accounts[4], tokensIds[3], { from: account_one });
-            await contractInstance.mint(accounts[5], tokensIds[4], { from: account_one });
-            await contractInstance.mint(accounts[6], tokensIds[5], { from: account_one });
-            await contractInstance.mint(accounts[7], tokensIds[6], { from: account_one });
-            await contractInstance.mint(accounts[8], tokensIds[7], { from: account_one });
-            await contractInstance.mint(accounts[9], tokensIds[8], { from: account_one });
+            tokensIds.forEach(async (tokenId, index) => {
+                if (index < 9) {
+                    const account = accounts[index + 1];
+                    // console.log(`Minting tokenId: ${tokenId} to account ${account}`);
+                    await contractInstance.mint(account, tokenId, { from: currentOwnerAccount });
+                }
 
-            await contractInstance.mint(accounts[10], tokensIds[9], { from: account_one });
-            await contractInstance.mint(accounts[10], tokensIds[10], { from: account_one });
+            })
+
+            await contractInstance.mint(accounts[10], tokensIds[9], { from: currentOwnerAccount });
+            await contractInstance.mint(accounts[10], tokensIds[10], { from: currentOwnerAccount });
         })
 
         it('should return total supply', async () => {
@@ -62,39 +72,46 @@ contract('TestERC721Mintable', accounts => {
         })
 
         it('should transfer token from one owner to another', async () => {
-            //accounts[9] -approved for tokenIds[7] will transfer the token to itself
-            let tx = await contractInstance.transferFrom(accounts[8], accounts[9], tokensIds[7], { from: accounts[8] });
+            //accounts[9] -approved for tokensIds[7] will transfer the token to accounts[8]
+            const tokenIdToTransfer = tokensIds[7];
+            let tx = await contractInstance.transferFrom(accounts[8], accounts[9], tokenIdToTransfer, { from: accounts[8] });
             truffleAssert.eventEmitted(tx, 'Transfer', (ev) => {
                 return expect(ev.from).to.deep.equal(accounts[8])
                     && expect(ev.to).to.equal(accounts[9])
-                    && expect(Number(ev.tokenId)).to.equal(tokensIds[7]);
+                    && expect(Number(ev.tokenId)).to.equal(tokenIdToTransfer);
             });
 
-            expect(await contractInstance.ownerOf(tokensIds[7])).to.equal(accounts[9]);
+            expect(await contractInstance.ownerOf(tokenIdToTransfer)).to.equal(accounts[9]);
             expect(Number(await contractInstance.balanceOf(accounts[9]))).to.equal(2);
             expect(Number(await contractInstance.balanceOf(accounts[8]))).to.equal(0);
-            expect(await contractInstance.getApproved(tokensIds[7])).to.equal(zeroAddress);
+            expect(await contractInstance.getApproved(tokenIdToTransfer)).to.equal(zeroAddress);
         })
     });
 
     describe('have ownership properties', async () => {
         before(async () => {
-            this.contractInstance = await ERC721MintableComplete.new(name, symbol, { from: account_one });
-            this.currentOwner = account_one;
-            console.log('Current Owner:', this.currentOwner);
+            this.contractInstance = await ERC721MintableComplete.new(name, symbol, { from: currentOwnerAccount });
+            // console.log('Current Owner:', currentOwnerAccount);
         })
 
-        it('rest', async () => {
-            expect(1).to.equal(1);
-        });
+        it('should fail when minting when address is not contract owner', async function () {
 
-        // it('should fail when minting when address is not contract owner', async function () {
-        //     await expectToRevert(await contractInstance.mint(account_two, 12, { from: account_one }), 'Caller is not the contract owner');
-        // })
+            await expectToRevert(
+                contractInstance.mint(
+                    accounts[2],
+                    500,
+                    {
+                        from: [accounts[2]]
+                    }),
+                'Only contract\'s owner can call this function',
+            );
 
-        // it('should return contract owner', async () => {
-        //     expect(await contractInstance.getOwner({ from: account_two })).to.equal(currentOwner);
-        // })
+
+        })
+
+        it('should return contract owner', async () => {
+            expect(await contractInstance.getOwner({ from: currentOwnerAccount })).to.equal(currentOwnerAccount);
+        })
 
     });
 });
